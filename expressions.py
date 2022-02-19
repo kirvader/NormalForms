@@ -141,7 +141,7 @@ class ExprTree:
     def __init__(self, negate=False, left_part=None, right_part=None, operator=Operator.NONE, label="",
                  is_literal=False):
         self.negate = negate
-        self.op = operator
+        self.operator = operator
         self.left_part = left_part
         self.right_part = right_part
         self.label = label
@@ -150,7 +150,7 @@ class ExprTree:
             self.label = 't' + str(ExprTree.last_auxiliary_number)
         self.is_literal = is_literal
 
-    def negate(self):
+    def invert_negate(self):
         self.negate = not self.negate
 
     def invertOperator(self):
@@ -166,29 +166,36 @@ class ExprTree:
             pass
         if self.negate and self.operator != ExprTree.Operator.NONE:
             self.invertOperator()
-            self.left_part.negate()
-            self.right_part.negate()
+            self.invert_negate()
+            self.left_part.invert_negate()
+            self.right_part.invert_negate()
+        if not (self.left_part is None):
+            self.left_part.make_nnf()
+        if not (self.right_part is None):
+            self.right_part.make_nnf()
 
-        self.left_part.make_NNF()
-        self.right_part.make_NNF()
+    def make_cnf(self):
+        pass
 
 
 def get_parsed_array(cur_str):
-    return "".join(filter(lambda x: x != ' ', cur_str))
+    return parse_string("".join(filter(lambda x: x != ' ', cur_str)))
 
 
 def get_expr_from_parsed_array(mb_arr):
     if not isinstance(mb_arr, list):
         return ExprTree(label=mb_arr, is_literal=True)
     if len(mb_arr) == 2 and mb_arr[0] == '-':
-        return get_expr_from_parsed_array(mb_arr[1]).negate()
+        cur_expr = get_expr_from_parsed_array(mb_arr[1])
+        cur_expr.invert_negate()
+        return cur_expr
 
     left_part = None
     operator = ExprTree.Operator.NONE
     for part in mb_arr:
         if part == '&':
             operator = ExprTree.Operator.AND
-        elif part == '&':
+        elif part == '|':
             operator = ExprTree.Operator.OR
         else:
             if left_part is None:
@@ -206,7 +213,7 @@ def read_expr(string):
 
 def get_string_repr(expr):
     ans = ""
-    if expr.negate:
+    if expr.invert_negate:
         ans += '-'
     if expr.left_part is None and expr.right_part is None:
         ans = ans + expr.label
@@ -215,7 +222,26 @@ def get_string_repr(expr):
     return ans
 
 
+def print_left_to_right(expr):
+    if expr is None:
+        return
+    if expr.negate:
+        print('-', end='')
+    print('(', end='')
+    print_left_to_right(expr.left_part)
+    if expr.operator != ExprTree.Operator.NONE:
+        print(expr.operator.value, end='')
+    else:
+        print(expr.label, end='')
+    print_left_to_right(expr.right_part)
+    print(')', end='')
+
+
 cur_str = input()
 expr = read_expr(cur_str)
+print_left_to_right(expr)
+print()
+expr.make_nnf()
+
 print("lol")
-print(get_string_repr(expr))
+print_left_to_right(expr)
