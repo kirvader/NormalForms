@@ -150,6 +150,11 @@ class ExprTree:
             self.label = 't' + str(ExprTree.last_auxiliary_number)
         self.is_literal = is_literal
 
+    def as_literal(self):
+        if self.negate:
+            return '-' + self.label
+        return self.label
+
     def invert_negate(self):
         self.negate = not self.negate
 
@@ -173,9 +178,6 @@ class ExprTree:
             self.left_part.make_nnf()
         if not (self.right_part is None):
             self.right_part.make_nnf()
-
-    def make_cnf(self):
-        pass
 
 
 def get_parsed_array(cur_str):
@@ -237,11 +239,4 @@ def print_left_to_right(expr):
     print(')', end='')
 
 
-cur_str = input()
-expr = read_expr(cur_str)
-print_left_to_right(expr)
-print()
-expr.make_nnf()
 
-print("lol")
-print_left_to_right(expr)
