@@ -11,6 +11,6 @@ expressions.print_left_to_right(expr)
 
 
 print("\ndnf")
-logic.print_dnf_str_appearance(expr)
+logic.print_dnf_str_appearance_from_expr(expr)
 print("\ncnf")
-logic.print_cnf_str_appearance(expr)
+logic.print_cnf_str_appearance_from_expr(expr)
