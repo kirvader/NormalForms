@@ -6,17 +6,22 @@ def make_nnf(expr):
 
 
 def print_clause(clause, operator):
-    if len(clause) == 1:
-        print(clause[0], end='')
+    clause_as_list = list(clause)
+    if len(clause_as_list) == 1:
+        print(clause_as_list[0], end='')
         return
     print('(', end='')
-    print(operator.join(clause), end='')
+    print(operator.join(clause_as_list), end='')
     print(')', end='')
 
 
-def print_dnf_str_appearance(expr):
+def print_dnf_str_appearance_from_expr(expr):
     dnf = get_dnf_from_expr(expr)
-    for clause in dnf[-1]:
+    print_dnf_str_appearance(dnf)
+
+
+def print_dnf_str_appearance(dnf):
+    for clause in dnf[:-1]:
         print_clause(clause, '&')
         print('|', end='')
     print_clause(dnf[-1], '&')
@@ -34,7 +39,6 @@ def get_dnf_from_nnf(expr):
             ans.add('-' + expr.label)
         else:
             ans.add(expr.label)
-        print(expr.label)
         return [ans]
     left_dnf = get_dnf_from_nnf(expr.left_part)
     right_dnf = get_dnf_from_nnf(expr.right_part)
@@ -76,8 +80,12 @@ def get_cnf_from_expr(expr):
     return ans
 
 
-def print_cnf_str_appearance(expr):
+def print_cnf_str_appearance_from_expr(expr):
     cnf = get_cnf_from_expr(expr)
+    print_cnf_str_appearance(cnf)
+
+
+def print_cnf_str_appearance(cnf):
     for clause in cnf[:-1]:
         print_clause(clause, '|')
         print('&', end='')
