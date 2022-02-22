@@ -30,6 +30,8 @@ class Clause:
             self.vars.append(get_var_from_literal(literal))
 
     def __str__(self):
+        if len(self.vars) == 1:
+            return str(self.vars[0])
         ans = "("
         for var in self.vars:
             ans = ans + str(var) + self.operator.value
