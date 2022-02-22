@@ -25,6 +25,49 @@ class ExprTree:
             self.label = 't' + str(ExprTree.last_auxiliary_number)
         self.is_literal = is_literal
 
+    def _left_part_need_brackets(self):
+        if self.left_part.is_literal:
+            return False
+        if self.left_part.negate:
+            return False
+        if self.left_part.operator == Operator.AND:
+            return False
+        if self.operator == Operator.OR:
+            return False
+        return True
+
+    def _right_part_need_brackets(self):
+        if self.right_part.is_literal:
+            return False
+        if self.right_part.negate:
+            return False
+        if self.right_part.operator == Operator.AND:
+            return False
+        if self.operator == Operator.OR:
+            return False
+        return True
+
+    def __str__(self):
+        if self.is_literal:
+            return self.as_literal()
+        ans = ''
+        if self.negate:
+            ans += '-('
+        if self._left_part_need_brackets():
+            ans += '(' + str(self.left_part) + ')'
+        else:
+            ans += str(self.left_part)
+        ans += str(self.operator.value)
+        if self._right_part_need_brackets():
+            ans += '(' + str(self.right_part) + ')'
+        else:
+            ans += str(self.right_part)
+        if self.negate:
+            ans += ')'
+        return ans
+
+
+
     def as_literal(self):
         if self.negate:
             return '-' + self.label

@@ -1,5 +1,6 @@
 import argparse
 
+from writers.expr_tree_writer import print_expr_tree_from_string
 from writers.nf_writer import print_nnf_from_string, print_cnf_from_string, print_dnf_from_string
 
 parser = argparse.ArgumentParser()
@@ -21,6 +22,10 @@ actions = [
 show_all = False
 if not (args.nnf or args.dnf or args.cnf):
     show_all = True
+
+print('I have received this expression:')
+print_expr_tree_from_string(args.input)
+print('And there are chosen normal forms:\n')
 
 for action in actions:
     if show_all or action[1]:

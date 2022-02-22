@@ -1,4 +1,6 @@
 from expression_forms.expr_tree import Operator
+from parsers.array_to_expr_parser import get_expr_from_parsed_array
+from parsers.string_to_array_parser import get_parsed_array
 
 
 def get_string_repr(expr):
@@ -27,6 +29,6 @@ def print_left_to_right(expr):
     print(')', end='')
 
 
-def print_expr_tree(expr_tree):
-    print_left_to_right(expr_tree)
-    print()
+def print_expr_tree_from_string(string):
+    print(get_expr_from_parsed_array(get_parsed_array(string)))
+
