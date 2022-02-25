@@ -13,6 +13,9 @@ class Var:
         self.negate = negate
         self.name = name
 
+    def __eq__(self, other):
+        return self.negate == other.negate and self.name == other.name
+
     def __str__(self):
         if self.negate:
             return f"-{self.name}"
@@ -38,6 +41,14 @@ class Clause:
         ans = ans[:-1]
         ans += ")"
         return ans
+
+    def __eq__(self, other):
+        res = (self.operator == other.operator) and (len(self.vars) == len(other.vars))
+        if not res:
+            return False
+        for i in range(len(self.vars)):
+            res = res and (self.vars[i] == other.vars[i])
+        return res
 
     def add_var(self, var):
         self.vars.append(var)

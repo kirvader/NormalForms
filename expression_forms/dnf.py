@@ -14,17 +14,17 @@ class DNF:
             s2 = 0
             res = DNF.DNF_Clause([])
             while s1 < len(self.vars) and s2 < len(other_clause.vars):
-                if self.vars[s1].name == self.vars[s2].name:
-                    if self.vars[s1].negate != self.vars[s2].negate:
+                if self.vars[s1].name == other_clause.vars[s2].name:
+                    if self.vars[s1].negate != other_clause.vars[s2].negate:
                         return None
                     res.add_var(self.vars[s1])
                     s1 += 1
                     s2 += 1
                     continue
-                if self.vars[s1].name > self.vars[s2].name:
-                    res.add_var(self.vars[s2])
+                if self.vars[s1].name > other_clause.vars[s2].name:
+                    res.add_var(other_clause.vars[s2])
                     s2 += 1
-                elif self.vars[s1].name < self.vars[s2].name:
+                else:
                     res.add_var(self.vars[s1])
                     s1 += 1
             while s1 < len(self.vars):
@@ -55,7 +55,7 @@ class DNF:
 
 
 def union_dnf(a, b):
-    return DNF([*a.clauses, *b.clauses])
+    return DNF([*(a.clauses), *(b.clauses)])
 
 
 def get_dnf_from_nnf(expr):
@@ -64,14 +64,18 @@ def get_dnf_from_nnf(expr):
         return ans
     left_dnf = get_dnf_from_nnf(expr.left_part)
     right_dnf = get_dnf_from_nnf(expr.right_part)
-    ans = []
     if expr.operator == expr_tree.Operator.AND:
+        ans = []
         for left_clause in left_dnf.clauses:
             for right_clause in right_dnf.clauses:
-                ans.append(left_clause.union(right_clause))
+                union_of_two = left_clause.union(right_clause)
+                if union_of_two is None:
+                    continue
+                ans.append(union_of_two)
+        return DNF(ans)
     else:
         ans = union_dnf(left_dnf, right_dnf)
-    return ans
+        return ans
 
 
 def get_dnf_from_expr(expr):

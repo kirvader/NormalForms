@@ -4,19 +4,23 @@ class Segment:
         self.right = right
         self.priority = priority
 
+    def __str__(self):
+        return f"({self.left}, {self.right})"
+
+    def __eq__(self, other):
+        return self.left == other.left and self.right == other.right
+
     def get_substring(self, cur_str):
         return cur_str[self.left:(self.right + 1)]
 
     def move_edges_by_brackets(self, cur_str):
-        negate_count = self.count_negates(cur_str)
-        self.left += negate_count  # only brackets or var
         if cur_str[self.left] == '(' and cur_str[self.right] == ')':
             self.left += 1
             self.right -= 1
 
     def count_negates(self, cur_str):
         res = 0
-        while self.left + res <= self.right and cur_str[res] == '-':
+        while self.left + res <= self.right and cur_str[self.left + res] == '-':
             res += 1
         return res
 
@@ -55,19 +59,20 @@ def parse_string(cur_str):
             exist_and = True
             next_segment.priority = True
             segments.append(next_segment)
-            segments.append(c)
+            segments.append(Segment(i, i))
             next_segment = Segment(i + 1, i, True)
             continue
         if c == '|':
             exist_or = True
             segments.append(next_segment)
-            segments.append(c)
+            segments.append(Segment(i, i))
             next_segment = Segment(i + 1, i, False)
             continue
         next_segment.right = i
     segments.append(next_segment)
     if not exist_or and not exist_and:
         negate_count = segments[0].count_negates(cur_str)
+        segments[0].left += negate_count  # only brackets or var
         segments[0].move_edges_by_brackets(cur_str)
         ans = []
         if negate_count % 2 == 1:
@@ -79,21 +84,23 @@ def parse_string(cur_str):
                 return ans
             return new_str
         else:
+            if len(ans) == 0:
+                return parse_string(new_str)
             ans.append(parse_string(new_str))
         return ans
     if not exist_and:
         ans = []
         for seg in segments:
-            if seg == '|':
-                ans.append(seg)
+            if seg.get_substring(cur_str) == '|':
+                ans.append(seg.get_substring(cur_str))
                 continue
             ans.append(parse_string(seg.get_substring(cur_str)))
         return ans
     if not exist_or:
         ans = []
         for seg in segments:
-            if seg == '&':
-                ans.append(seg)
+            if seg.get_substring(cur_str) == '&':
+                ans.append(seg.get_substring(cur_str))
                 continue
             ans.append(parse_string(seg.get_substring(cur_str)))
         return ans
@@ -101,10 +108,10 @@ def parse_string(cur_str):
     last_high_priority_block = []
     in_and_block = False
     for seg in segments:
-        if seg == '&':
+        if seg.get_substring(cur_str) == '&':
             last_high_priority_block.append('&')
             continue
-        if seg == '|':
+        if seg.get_substring(cur_str) == '|':
             if in_and_block:
                 ans.append(last_high_priority_block)
                 last_high_priority_block = []
@@ -123,4 +130,7 @@ def parse_string(cur_str):
 
 # That's the function to call on any string expression
 def get_parsed_array(cur_str):
-    return parse_string("".join(filter(lambda x: x != ' ', cur_str)))
+    parsed_array = parse_string("".join(filter(lambda x: x != ' ', cur_str)))
+    if isinstance(parsed_array, str):
+        return [parsed_array]
+    return parsed_array
