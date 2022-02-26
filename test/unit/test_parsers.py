@@ -1,5 +1,4 @@
 import copy
-
 import pytest
 
 import conftest as config
