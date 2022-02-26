@@ -34,7 +34,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip3 install pytest
-          pip3 install -e .
 
       # Runs a single command using the runners shell
       - name: Run a one-line script # pytest running unit tests
