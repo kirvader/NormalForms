@@ -36,5 +36,5 @@ jobs:
           pip3 install pytest
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script # pytest running unit tests
+      - name: Unit tests running
         run: python -m pytest
